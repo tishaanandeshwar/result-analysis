@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Result Analysis | Student Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        /* Olive Green theme background */
+        body { 
+            background: linear-gradient(135deg, #e8f0e0 0%, #d4e0c5 100%); 
+            min-height: 100vh; 
+            padding: 30px 20px; 
+        }
+        
+        .main-container { max-width: 1400px; margin: 0 auto; }
+        
+        /* SQUARE CORNERS - removed all border-radius */
+        .header-panel, .stat-card, .form-card, .table-card, .login-card, 
+        .input-group input, .input-group select, button, .logout-area, 
+        .grade-badge, .student-view-note, .alert-msg, .role-tabs, .role-tab,
+        .login-input, .demo-credentials, .stats-row .stat-card, .grade-legend {
+            border-radius: 0px !important;
+        }
+        
+        /* Header styles - NO shadows */
+        .header-panel { 
+            background: white; 
+            padding: 20px 32px; 
+            margin-bottom: 28px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid #b8c8a8;
+        }
+        
+        .title-section h1 { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #4a6b3d, #6b8c5a); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent; 
+        }
+        
+        .title-section p { color: #5a6e4a; font-size: 0.85rem; margin-top: 6px; }
+        
+        .logout-area { 
+            background: #edf3e8; 
+            padding: 8px 20px; 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .logout-btn { 
+            background: none; 
+            border: none; 
+            color: #7a5c3c; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin-left: 12px; 
+        }
+        
+        /* Login overlay */
+        .login-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(30, 45, 20, 0.75); 
+            backdrop-filter: blur(5px); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+        }
+        
+        .login-card { 
+            background: white; 
+            max-width: 420px; 
+            width: 90%; 
+            padding: 36px 32px; 
+            text-align: center; 
+            border: 1px solid #b8c8a8;
+        }
+        
+        .role-tabs { 
+            display: flex; 
+            gap: 0px; 
+            margin: 24px 0; 
+            background: #eaf0e5; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .role-tab { 
+            flex: 1; 
+            padding: 10px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            text-align: center; 
+            border-right: 1px solid #c0d0b0;
+        }
+        
+        .role-tab:last-child { border-right: none; }
+        .role-tab.active { background: #4a6b3d; color: white; }
+        
+        .login-input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            margin: 12px 0; 
+            border: 1.5px solid #c0d0b0; 
+        }
+        
+        .login-btn { 
+            background: #4a6b3d; 
+            width: 100%; 
+            padding: 12px; 
+            font-weight: bold; 
+            color: white; 
+            margin-top: 16px; 
+            cursor: pointer; 
+            border: none; 
+        }
+        
+        .error-msg { color: #b85c3a; font-size: 0.8rem; margin-top: 12px; }
+        
+        .demo-credentials { 
+            margin-top: 20px; 
+            font-size: 12px; 
+            color: #4a5e3a; 
+            background: #f4f8f0; 
+            padding: 10px; 
+            border: 1px solid #d0e0c0;
+        }
+        
+        .dashboard-content { display: none; }
+        
+        /* Stats row - NO shadows */
+        .stats-row { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 30px; }
+        
+        .stat-card { 
+            background: white; 
+            padding: 18px 24px; 
+            flex: 1 1 180px; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .stat-number { font-size: 2rem; font-weight: 800; color: #2a3a20; }
+        .stat-label { color: #5a6e4a; font-weight: 500; margin-top: 6px; }
+        
+        .dashboard-grid { display: flex; flex-wrap: wrap; gap: 28px; }
+        
+        .form-card { 
+            flex: 1.2; 
+            min-width: 280px; 
+            background: white; 
+            padding: 24px 28px; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .table-card { 
+            flex: 2.5; 
+            background: white; 
+            padding: 20px 24px; 
+            overflow-x: auto; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        h3 { 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            margin-bottom: 20px; 
+            color: #2a3a20; 
+            border-left: 5px solid #6b8c5a; 
+            padding-left: 16px; 
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        label { font-weight: 600; display: block; margin-bottom: 8px; font-size: 0.85rem; color: #4a5e3a; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1.5px solid #c0d0b0; 
+        }
+        
+        button { 
+            background: #4a6b3d; 
+            border: none; 
+            padding: 12px; 
+            font-weight: 600; 
+            color: white; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 6px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            border: 1px solid #3a5a2d;
+        }
+        
+        button:hover {
+            background: #5a7b4d;
+        }
+        
+        .btn-secondary { background: #7a9a6a; margin-top: 12px; border-color: #6a8a5a; }
+        .btn-secondary:hover { background: #8aaa7a; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 14px 8px; background: #edf3e8; border-bottom: 2px solid #c0d0b0; }
+        td { padding: 12px 8px; border-bottom: 1px solid #e0e8d8; }
+        
+        .grade-badge { 
+            background: #e0e8d8; 
+            color: #4a6b3d; 
+            padding: 4px 10px; 
+            font-weight: 600; 
+            font-size: 0.7rem; 
+            display: inline-block; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .grade-fail { background: #f0e0d8; color: #b85c3a; border-color: #e0c8b0; }
+        
+        .action-icons i { cursor: pointer; opacity: 0.7; margin: 0 4px; }
+        .action-icons i:hover { opacity: 1; }
+        
+        .student-view-note { 
+            background: #eaf0e5; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            display: none; 
+            border: 1px solid #c0d0b0;
+        }
+        
+        .alert-msg { 
+            background: #e0e8d8; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            font-size: 0.8rem; 
+            text-align: center; 
+            display: none; 
+            border-left: 4px solid #6b8c5a;
+        }
+        
+        .grade-legend { 
+            margin-top: 20px; 
+            text-align: right; 
+            font-size: 0.7rem; 
+            color: #5a6e4a; 
+            background: #f4f8f0; 
+            padding: 8px 12px; 
+            border: 1px solid #d0e0c0;
+        }
+        
+        input:focus, select:focus, button:focus, .login-input:focus {
+            outline: none;
+            border-color: #6b8c5a;
+            box-shadow: none;
+        }
+        
+        @media (max-width: 860px) { 
+            .dashboard-grid { flex-direction: column; } 
+            .header-panel { flex-direction: column; align-items: flex-start; gap: 15px; } 
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <div class="header-panel">
+        <div class="title-section">
+            <h1>Result Analysis</h1>
+            <p>Comprehensive performance tracking · Grade analysis</p>
+        </div>
+        <div class="logout-area">
+            <span id="activeUserLabel">Not logged in</span>
+            <button id="globalLogoutBtn" class="logout-btn" style="display: none;">Logout</button>
+        </div>
+    </div>
+    <div id="dashboardPanel" class="dashboard-content">
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-number" id="totalStudents">0</div><div class="stat-label">Total Records</div></div>
+            <div class="stat-card"><div class="stat-number" id="avgMarks">0</div><div class="stat-label">Avg Marks (%)</div></div>
+            <div class="stat-card"><div class="stat-number" id="passPercent">0%</div><div class="stat-label">Pass Rate</div></div>
+            <div class="stat-card"><div class="stat-number" id="topPerformer">—</div><div class="stat-label">Top Scorer</div></div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="form-card" id="adminFormCard">
+                <h3>Record Performance (Admin)</h3>
+                <div id="formAlert" class="alert-msg"></div>
+                <form id="studentForm">
+                    <div class="input-group"><label>Full Name</label><input type="text" id="studentName" placeholder="e.g., Ananya Verma" required></div>
+                    <div class="input-group"><label>Subject</label><input type="text" id="subject" placeholder="Mathematics / Science" required></div>
+                    <div class="input-group"><label>Marks (0-100)</label><input type="number" id="marks" step="0.01" min="0" max="100" required></div>
+                    <div class="input-group"><label>Exam Term</label><select id="examTerm"><option>Mid-Term</option><option>Final</option></select></div>
+                    <button type="submit">Submit Result</button>
+                    <button type="button" id="refreshTableBtn" class="btn-secondary">Refresh Data</button>
+                </form>
+            </div>
+            <div class="table-card">
+                <h3>Student Performance Records</h3>
+                <div id="studentViewNote" class="student-view-note">Student Access Mode — View Only</div>
+                <div style="overflow-x: auto;">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Student</th><th>Subject</th><th>Marks</th><th>Grade</th><th>Term</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="7" style="text-align:center;">Loading records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grade-legend">Grade: A(>=85) B(70-84) C(55-69) D(40-54) F(<40)</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loginModal" class="login-overlay">
+    <div class="login-card">
+        <h2>Result Analysis</h2>
+        <p style="margin-bottom: 20px;">Sign in with your role</p>
+        <div class="role-tabs" id="roleTabs">
+            <div class="role-tab active" data-role="admin">Administrator</div>
+            <div class="role-tab" data-role="student">Student</div>
+        </div>
+        <input type="text" id="loginUsername" class="login-input" placeholder="Username" autocomplete="off">
+        <input type="password" id="loginPassword" class="login-input" placeholder="Password">
+        <button id="doLoginBtn" class="login-btn">Login</button>
+        <div id="loginError" class="error-msg"></div>
+        <div class="demo-credentials"><strong>Test Access:</strong><br>Admin: admin / admin123<br>Student: student / pass123</div>
+    </div>
+</div>
+<script>
+// Database Layer
+const DB_NAME = "ResultAnalyticsDB";
+const STORE_NAME = "student_results";
+let db = null;
+let currentUser = null;
+
+function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 4);
+        request.onerror = () => reject("DB error");
+        request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+        request.onupgradeneeded = (e) => {
+            const dbInst = e.target.result;
+            if (!dbInst.objectStoreNames.contains(STORE_NAME)) {
+                dbInst.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+            }
+        };
+    });
+}
+
+async function getAllResults() {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction([STORE_NAME], "readonly");
+        const req = tx.objectStore(STORE_NAME).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject();
+    });
+}
+
+async function addResult(record) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction([STORE_NAME], "readwrite");
+        const req = tx.objectStore(STORE_NAME).add(record);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject();
+    });
+}
+
+async function deleteResultById(id) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction([STORE_NAME], "readwrite");
+        const req = tx.objectStore(STORE_NAME).delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject();
+    });
+}
+
+function computeGrade(marks) {
+    if (marks >= 85) return "A";
+    if (marks >= 70) return "B";
+    if (marks >= 55) return "C";
+    if (marks >= 40) return "D";
+    return "F";
+}
+
+async function syncGrades() {
+    const all = await getAllResults();
+    for (let rec of all) {
+        const newGrade = computeGrade(rec.marks);
+        if (rec.grade !== newGrade) {
+            const tx = db.transaction([STORE_NAME], "readwrite");
+            rec.grade = newGrade;
+            tx.objectStore(STORE_NAME).put(rec);
+        }
+    }
+}
+
+async function seedDemoData() {
+    const existing = await getAllResults();
+    if (existing.length === 0) {
+        const demo = [
+            { studentName: "Tisha Nandeshwar", subject: "Physics", marks: 91, examTerm: "Final", grade: computeGrade(91) },
+            { studentName: "Reyansh Nair", subject: "Mathematics", marks: 74, examTerm: "Mid-Term", grade: computeGrade(74) },
+            { studentName: "Sanya Kapoor", subject: "Chemistry", marks: 48, examTerm: "Mid-Term", grade: computeGrade(48) },
+            { studentName: "Ishaan Mehta", subject: "Biology", marks: 86, examTerm: "Final", grade: computeGrade(86) },
+            { studentName: "Purva Joshi", subject: "Computer Science", marks: 39, examTerm: "Mid-Term", grade: computeGrade(39) },
+            { studentName: "Avinash Moon", subject: "English", marks: 67, examTerm: "Final", grade: computeGrade(67) }
+        ];
+        for (let r of demo) await addResult(r);
+    }
+}
+
+function computeStats(records) {
+    if (!records.length) return { total: 0, avg: 0, passPercent: 0, topName: "—" };
+    let sum = 0, pass = 0, maxMarks = -1, topStudent = "—";
+    for (let r of records) {
+        sum += r.marks;
+        if (r.marks >= 40) pass++;
+        if (r.marks > maxMarks) { maxMarks = r.marks; topStudent = r.studentName; }
+    }
+    return { total: records.length, avg: (sum/records.length).toFixed(2), passPercent: ((pass/records.length)*100).toFixed(1), topName: topStudent };
+}
+
+function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+async function renderUI() {
+    if (!db || !currentUser) return;
+    await syncGrades();
+    const records = await getAllResults();
+    const stats = computeStats(records);
+    document.getElementById("totalStudents").innerText = stats.total;
+    document.getElementById("avgMarks").innerText = stats.avg;
+    document.getElementById("passPercent").innerText = `${stats.passPercent}%`;
+    document.getElementById("topPerformer").innerHTML = stats.topName !== "—" ? escapeHtml(stats.topName) : "—";
+    const tbody = document.getElementById("tableBody");
+    if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No results found</td></tr>`;
+    } else {
+        tbody.innerHTML = records.map(rec => `
+            <tr>
+                <td>${rec.id}</td>
+                <td><strong>${escapeHtml(rec.studentName)}</strong></td>
+                <td>${escapeHtml(rec.subject)}</td>
+                <td>${rec.marks.toFixed(2)}</td>
+                <td><span class="grade-badge ${rec.grade === 'F' ? 'grade-fail' : ''}">${rec.grade}</span></td>
+                <td>${escapeHtml(rec.examTerm)}</td>
+                <td class="action-icons">${currentUser.role === 'admin' ? `<i class="fas fa-trash-alt delete-entry" data-id="${rec.id}" style="color:#b85c3a;"></i>` : '—'}</td>
+            </tr>
+        `).join("");
+        if (currentUser.role === 'admin') {
+            document.querySelectorAll('.delete-entry').forEach(icon => {
+                icon.addEventListener('click', async (e) => {
+                    const id = Number(icon.getAttribute('data-id'));
+                    if (confirm("Delete this record permanently?")) {
+                        await deleteResultById(id);
+                        showAlert("Record deleted", "#e0e8d8");
+                        await renderUI();
+                    }
+                });
+            });
+        }
+    }
+    const adminForm = document.getElementById("adminFormCard");
+    const studentNote = document.getElementById("studentViewNote");
+    if (currentUser.role === 'admin') {
+        adminForm.style.display = "block";
+        studentNote.style.display = "none";
+    } else {
+        adminForm.style.display = "none";
+        studentNote.style.display = "block";
+    }
+}
+
+function showAlert(msg, bg) {
+    const alertDiv = document.getElementById("formAlert");
+    alertDiv.innerText = msg;
+    alertDiv.style.display = "block";
+    alertDiv.style.backgroundColor = bg;
+    setTimeout(() => { alertDiv.style.display = "none"; }, 2500);
+}
+
+// Login Functions
+function closeLoginAndShowDashboard(user) {
+    currentUser = user;
+    document.getElementById("loginModal").style.display = "none";
+    document.getElementById("dashboardPanel").style.display = "block";
+    document.getElementById("globalLogoutBtn").style.display = "inline-block";
+    const userSpan = document.getElementById("activeUserLabel");
+    if(user.role === 'admin') userSpan.innerHTML = `Admin: ${user.name}`;
+    else userSpan.innerHTML = `Student: ${user.name}`;
+    renderUI();
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById("dashboardPanel").style.display = "none";
+    document.getElementById("globalLogoutBtn").style.display = "none";
+    document.getElementById("activeUserLabel").innerHTML = "Not logged in";
+    document.getElementById("loginModal").style.display = "flex";
+    document.getElementById("loginUsername").value = "";
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("loginError").innerText = "";
+}
+
+// Event Listeners
+document.getElementById("doLoginBtn").addEventListener("click", () => {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    const errorDiv = document.getElementById("loginError");
+    const activeTab = document.querySelector(".role-tab.active");
+    const selectedRole = activeTab ? activeTab.getAttribute("data-role") : "admin";
+    if (!username || !password) { errorDiv.innerText = "Please enter credentials"; return; }
+    if (selectedRole === "admin") {
+        if (username === "admin" && password === "admin123") closeLoginAndShowDashboard({ role: "admin", name: "Administrator" });
+        else errorDiv.innerText = "Invalid admin credentials";
+    } else {
+        if (username === "student" && password === "pass123") closeLoginAndShowDashboard({ role: "student", name: "Student User" });
+        else errorDiv.innerText = "Invalid student credentials";
+    }
+});
+
+document.getElementById("globalLogoutBtn").addEventListener("click", logout);
+document.getElementById("studentForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser || currentUser.role !== 'admin') { showAlert("Access denied. Admin only.", "#f0e0d8"); return; }
+    const name = document.getElementById("studentName").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    let marks = parseFloat(document.getElementById("marks").value);
+    const term = document.getElementById("examTerm").value;
+    if (!name || !subject || isNaN(marks) || marks<0 || marks>100) { showAlert("Valid data required", "#f0e0d8"); return; }
+    const grade = computeGrade(marks);
+    await addResult({ studentName: name, subject, marks, examTerm: term, grade });
+    document.getElementById("studentForm").reset();
+    showAlert("Result added successfully", "#e0e8d8");
+    await renderUI();
+});
+document.getElementById("refreshTableBtn").addEventListener("click", async () => { await renderUI(); showAlert("Data refreshed", "#e0e8d8"); });
+document.querySelectorAll(".role-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll(".role-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+    });
+});
+document.getElementById("loginPassword").addEventListener("keypress", (e) => { if (e.key === "Enter") document.getElementById("doLoginBtn").click(); });
+
+// Initialize
+window.addEventListener("DOMContentLoaded", async () => {
+    await openDatabase();
+    await seedDemoData();
+    document.getElementById("dashboardPanel").style.display = "none";
+    document.getElementById("globalLogoutBtn").style.display = "none";
+});
+</script>
+</body>
+</html>
