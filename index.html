@@ -6,25 +6,18 @@
     <title>Result Analysis | Student Portal</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        /* Olive Green theme background */
         body { 
             background: linear-gradient(135deg, #e8f0e0 0%, #d4e0c5 100%); 
             min-height: 100vh; 
             padding: 30px 20px; 
         }
-        
         .main-container { max-width: 1400px; margin: 0 auto; }
-        
-        /* SQUARE CORNERS - removed all border-radius */
         .header-panel, .stat-card, .form-card, .table-card, .login-card, 
         .input-group input, .input-group select, button, .logout-area, 
         .grade-badge, .student-view-note, .alert-msg, .role-tabs, .role-tab,
         .login-input, .demo-credentials, .stats-row .stat-card, .grade-legend {
             border-radius: 0px !important;
         }
-        
-        /* Header styles - NO shadows */
         .header-panel { 
             background: white; 
             padding: 20px 32px; 
@@ -35,7 +28,6 @@
             align-items: center; 
             border: 1px solid #b8c8a8;
         }
-        
         .title-section h1 { 
             font-size: 1.8rem; 
             font-weight: 700; 
@@ -44,9 +36,7 @@
             background-clip: text; 
             color: transparent; 
         }
-        
         .title-section p { color: #5a6e4a; font-size: 0.85rem; margin-top: 6px; }
-        
         .logout-area { 
             background: #edf3e8; 
             padding: 8px 20px; 
@@ -54,7 +44,6 @@
             font-weight: 600; 
             border: 1px solid #c0d0b0;
         }
-        
         .logout-btn { 
             background: none; 
             border: none; 
@@ -64,7 +53,6 @@
             margin-left: 12px; 
         }
         
-        /* Login overlay */
         .login-overlay { 
             position: fixed; 
             top: 0; 
@@ -78,7 +66,6 @@
             justify-content: center; 
             z-index: 1000; 
         }
-        
         .login-card { 
             background: white; 
             max-width: 420px; 
@@ -87,7 +74,6 @@
             text-align: center; 
             border: 1px solid #b8c8a8;
         }
-        
         .role-tabs { 
             display: flex; 
             gap: 0px; 
@@ -95,7 +81,6 @@
             background: #eaf0e5; 
             border: 1px solid #c0d0b0;
         }
-        
         .role-tab { 
             flex: 1; 
             padding: 10px; 
@@ -107,14 +92,12 @@
         
         .role-tab:last-child { border-right: none; }
         .role-tab.active { background: #4a6b3d; color: white; }
-        
         .login-input { 
             width: 100%; 
             padding: 14px 16px; 
             margin: 12px 0; 
             border: 1.5px solid #c0d0b0; 
         }
-        
         .login-btn { 
             background: #4a6b3d; 
             width: 100%; 
@@ -125,7 +108,6 @@
             cursor: pointer; 
             border: none; 
         }
-        
         .error-msg { color: #b85c3a; font-size: 0.8rem; margin-top: 12px; }
         
         .demo-credentials { 
@@ -136,19 +118,14 @@
             padding: 10px; 
             border: 1px solid #d0e0c0;
         }
-        
         .dashboard-content { display: none; }
-        
-        /* Stats row - NO shadows */
         .stats-row { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 30px; }
-        
         .stat-card { 
             background: white; 
             padding: 18px 24px; 
             flex: 1 1 180px; 
             border: 1px solid #c0d0b0;
         }
-        
         .stat-number { font-size: 2rem; font-weight: 800; color: #2a3a20; }
         .stat-label { color: #5a6e4a; font-weight: 500; margin-top: 6px; }
         
@@ -161,7 +138,6 @@
             padding: 24px 28px; 
             border: 1px solid #c0d0b0;
         }
-        
         .table-card { 
             flex: 2.5; 
             background: white; 
@@ -169,7 +145,6 @@
             overflow-x: auto; 
             border: 1px solid #c0d0b0;
         }
-        
         h3 { 
             font-size: 1.3rem; 
             font-weight: 600; 
@@ -187,7 +162,6 @@
             padding: 12px 16px; 
             border: 1.5px solid #c0d0b0; 
         }
-        
         button { 
             background: #4a6b3d; 
             border: none; 
@@ -481,7 +455,6 @@ async function renderUI() {
         studentNote.style.display = "block";
     }
 }
-
 function showAlert(msg, bg) {
     const alertDiv = document.getElementById("formAlert");
     alertDiv.innerText = msg;
@@ -489,7 +462,6 @@ function showAlert(msg, bg) {
     alertDiv.style.backgroundColor = bg;
     setTimeout(() => { alertDiv.style.display = "none"; }, 2500);
 }
-
 // Login Functions
 function closeLoginAndShowDashboard(user) {
     currentUser = user;
@@ -501,7 +473,6 @@ function closeLoginAndShowDashboard(user) {
     else userSpan.innerHTML = `Student: ${user.name}`;
     renderUI();
 }
-
 function logout() {
     currentUser = null;
     document.getElementById("dashboardPanel").style.display = "none";
@@ -512,7 +483,6 @@ function logout() {
     document.getElementById("loginPassword").value = "";
     document.getElementById("loginError").innerText = "";
 }
-
 // Event Listeners
 document.getElementById("doLoginBtn").addEventListener("click", () => {
     const username = document.getElementById("loginUsername").value.trim();
@@ -529,7 +499,6 @@ document.getElementById("doLoginBtn").addEventListener("click", () => {
         else errorDiv.innerText = "Invalid student credentials";
     }
 });
-
 document.getElementById("globalLogoutBtn").addEventListener("click", logout);
 document.getElementById("studentForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -553,7 +522,6 @@ document.querySelectorAll(".role-tab").forEach(tab => {
     });
 });
 document.getElementById("loginPassword").addEventListener("keypress", (e) => { if (e.key === "Enter") document.getElementById("doLoginBtn").click(); });
-
 // Initialize
 window.addEventListener("DOMContentLoaded", async () => {
     await openDatabase();
